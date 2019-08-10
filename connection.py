@@ -59,10 +59,20 @@ class Client:
     def connect(self, ip, port):
 
         self.sock.connect((str(ip), port))
+        self.logger.log('Connected to server')
+
+    def send(self, message):
+
+        try:
+            self.sock.sendall(str.encode(message))
+        except:
+            # Send fail
+            self.logger.log('ERROR message send failed')
+            sys.exit()
 
     def receive(self):
 
-        print(self.sock.recv(1024).decode())
+        print(self.sock.recv(4096).decode())
 
     def close(self):
 
@@ -75,9 +85,10 @@ if __name__ == '__main__':
         s = Server()
         s.listen()
     elif sys.argv[1].lower() == 'client':
-        server_address = IPAddress('127.0.0.1')
+        server_address = IPAddress('172.217.167.78')
         c = Client()
-        c.connect(server_address, 20)
+        c.connect(server_address, 80)
+        c.send('&quot;GET / HTTP/1.1\r\n\r\n&quot;')
         c.receive()
         c.close()
     else:
