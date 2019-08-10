@@ -19,10 +19,10 @@ class Logger:
 
 class Server:
 
-    def __init__(self):
+    def __init__(self, port=20):
 
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.port = 12345
+        self.port = port
 
         self.logger = Logger('SERVER')
         self.logger.log('SERVER STARTED')
@@ -49,18 +49,23 @@ class Server:
 
 class Client:
 
-    def __init__(self):
+    def __init__(self, port=20):
 
         self.sock = socket.socket()
-        self.port = 12345
 
         self.logger = Logger('CLIENT')
         self.logger.log('CLIENT STARTED')
 
-    def connect(self, ip):
+    def connect(self, ip, port):
 
-        self.sock.connect((str(ip), self.port))
+        self.sock.connect((str(ip), port))
+
+    def receive(self):
+
         print(self.sock.recv(1024).decode())
+
+    def close(self):
+
         self.sock.close()
 
 
@@ -70,9 +75,11 @@ if __name__ == '__main__':
         s = Server()
         s.listen()
     elif sys.argv[1].lower() == 'client':
-        server_address = IPAddress('128.0.10.1')
+        server_address = IPAddress('127.0.0.1')
         c = Client()
-        c.connect(server_address)
+        c.connect(server_address, 20)
+        c.receive()
+        c.close()
     else:
         print('ERROR: unknown command ', sys.argv[1])
         print('usage: python connection.py [client/server]')
